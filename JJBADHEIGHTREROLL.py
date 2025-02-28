@@ -1,7 +1,7 @@
 #This script checks for your health, if its not the set value it will press the number 3 on your keyboard (where reroll character is) and press left click on your mouse.
 #its unfinished and was made in 10 minutes so dont hate:>. Correct value usage: Instead of 145,50 for an example use 14550 (leave out decimals). The program checks for the value every set of a time 
 #if its not the correct value in between then it automaticly rolls.
-
+#you need to download tesseract and have "keyboard", "pyautogui" installed for python
 
 import tkinter as tk
 import threading
