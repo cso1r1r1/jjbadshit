@@ -32,7 +32,7 @@ class CoordinateSelector:
 
 
         self.center_text = tk.Label(root, text="PRESS ESCAPE TO CLOSE", font=("Helvetica", 20), fg="white", bg="black")
-        self.center_text.place(relx=0.5, rely=0.5, anchor="center")  # Position in the center
+        self.center_text.place(relx=0.5, rely=0.5, anchor="center") 
 
 
         self.start_x = None
@@ -48,7 +48,6 @@ class CoordinateSelector:
         self.root.bind("<Escape>", self.close_program)
 
     def on_button_press(self, event):
-        """Start drawing the rectangle."""
         self.start_x = event.x
         self.start_y = event.y
         self.is_drawing = True
@@ -57,7 +56,6 @@ class CoordinateSelector:
         self.rect = self.canvas.create_rectangle(self.start_x, self.start_y, self.start_x, self.start_y, outline="blue", width=2)
 
     def on_mouse_drag(self, event):
-        """Update rectangle size as the user drags the mouse."""
         if self.is_drawing:
 
             self.canvas.coords(self.rect, self.start_x, self.start_y, event.x, event.y)
@@ -65,7 +63,6 @@ class CoordinateSelector:
             self.update_coordinates(event.x, event.y)
 
     def on_button_release(self, event):
-        """Finish drawing the rectangle."""
         self.is_drawing = False
         self.update_coordinates(event.x, event.y)
 
@@ -73,7 +70,6 @@ class CoordinateSelector:
         messagebox.showinfo("Coordinates", f"Top Left: ({self.start_x}, {self.start_y})\nWidth, Height: ({event.x - self.start_x}, {event.y - self.start_y})")
 
     def update_coordinates(self, end_x, end_y):
-        """Update the displayed coordinates (X, Y, Width, Height)."""
         width = end_x - self.start_x
         height = end_y - self.start_y
 
@@ -81,7 +77,6 @@ class CoordinateSelector:
         self.label_width_height.config(text=f"Width, Height: ({width}, {height})")
 
     def close_program(self, event=None):
-        """Close the program when Escape key is pressed."""
         self.root.quit()
 
 if __name__ == "__main__":
