@@ -90,9 +90,9 @@ class AutoClickerBot:
         return text
     
     def extract_numeric_value(self, text):
-        text = text.replace('.', '')  # Remove all '.' characters
+        text = text.replace('.', '')
         numbers = [int(s) for s in text.split() if s.isdigit()]
-        print(f"Extracted numeric values: {numbers}")  # Debug print to see the extracted numbers
+        print(f"Extracted numeric values: {numbers}")
         return numbers[0] if numbers else None
     
     def run_bot(self):
@@ -107,8 +107,8 @@ class AutoClickerBot:
                 top = int(self.entry_y.get())
                 width = int(self.entry_width.get())
                 height = int(self.entry_height.get())
-                min_value = int(self.entry_min.get())  # Get min value from user input
-                max_value = int(self.entry_max.get())  # Get max value from user input
+                min_value = int(self.entry_min.get()
+                max_value = int(self.entry_max.get())
             except ValueError:
                 self.status_label.config(text="Status: Invalid coordinates or range values", fg="red")
                 return
@@ -124,15 +124,15 @@ class AutoClickerBot:
                 if previous_value is None or detected_value == previous_value:
                     consecutive_checks += 1
                 else:
-                    consecutive_checks = 0  # Reset if value changed
+                    consecutive_checks = 0
                 
                 if consecutive_checks >= 4:
-                    print(f"Detected value: {detected_value}")  # Print detected value in the console
+                    print(f"Detected value: {detected_value}")
                     self.status_label.config(text=f"Status: Value {detected_value} detected, adjusting", fg="blue")
                     
                     self.value_detected_label.config(text=f"Value {detected_value} detected, preparing to close...")
                     
-                    keyboard.press_and_release("3")  # Press the "3" key
+                    keyboard.press_and_release("3")
                     pyautogui.click()
                     
                     time.sleep(2)
