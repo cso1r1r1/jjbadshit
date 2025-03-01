@@ -90,7 +90,7 @@ class AutoClickerBot:
         return text
     
     def extract_numeric_value(self, text):
-        text = text.replace('.', '')
+        text = text.replace('.', ',')
         numbers = [int(s) for s in text.split() if s.isdigit()]
         print(f"Extracted numeric values: {numbers}")
         return numbers[0] if numbers else None
