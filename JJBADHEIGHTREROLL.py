@@ -1,7 +1,18 @@
-#This script checks for your health, if its not the set value it will press the number 3 on your keyboard (where reroll character is) and press left click on your mouse.
-#its unfinished and was made in 10 minutes so dont hate:>. Correct value usage: Instead of 145,50 for an example use 14550 (leave out decimals). The program checks for the value every set of a time 
-#if its not the correct value in between then it automaticly rolls.
-#you need to download tesseract and have "keyboard", "pyautogui" installed for python
+# An unoptimized script but works,
+# todo: set tesseract oct path at line 17 (dont remove "r"), set the debugging image location at line 96 (dont remove the "r")
+# paste this into cmd
+# pip install pytesseract
+# pip install keyboard
+# pip install pyautogui
+# pip install mss
+# pip install numpy
+# launch the app and use the coordinate selector to select your hp value, dont include decimals. screenshot the coordinates then paste it into the program
+# min value and max value are the hp thresholds, i recommend setting them to 159-200 (it searches between those values)
+# press start then tab out the program quickly since it will start pressing 3 and left click automaticly if the value is not right. (selects RerollCharacter and presses Left click if you dont have the set hp)
+# when you get the right value, it will stop the program and close it automaticly.
+
+
+
 
 import tkinter as tk
 import threading
@@ -11,6 +22,9 @@ import numpy as np
 import pytesseract
 import keyboard
 import pyautogui
+import cv2
+from PIL import Image
+import re
 
 # Set Tesseract OCR path
 tesseract_path = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
@@ -84,16 +98,26 @@ class AutoClickerBot:
             img = np.array(screenshot)
             return img
     
+    def preprocess_image(self, img):
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        _, thresh = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY)
+        return Image.fromarray(thresh)
+
     def detect_text(self, image):
-        text = pytesseract.image_to_string(image, config='--psm 6')
-        print(f"Detected text: {text}")
+        processed_image = self.preprocess_image(image)
+        processed_image.save(r"C:\Users\asd\Desktop\debug_capture.png")
+        text = pytesseract.image_to_string(processed_image, config='--psm 7 -c tessedit_char_whitelist=0123456789')
+        print(f"OCR raw output: {text}")
         return text
     
     def extract_numeric_value(self, text):
-        text = text.replace('.', ',')
-        numbers = [int(s) for s in text.split() if s.isdigit()]
-        print(f"Extracted numeric values: {numbers}")
-        return numbers[0] if numbers else None
+        match = re.search(r'\d+', text)
+        if match:
+            value = int(match.group())
+            print(f"Extracted numeric value: {value}")
+            return value
+        print("No numeric value found.")
+        return None
     
     def run_bot(self):
         consecutive_checks = 0
@@ -107,7 +131,7 @@ class AutoClickerBot:
                 top = int(self.entry_y.get())
                 width = int(self.entry_width.get())
                 height = int(self.entry_height.get())
-                min_value = int(self.entry_min.get()
+                min_value = int(self.entry_min.get())
                 max_value = int(self.entry_max.get())
             except ValueError:
                 self.status_label.config(text="Status: Invalid coordinates or range values", fg="red")
@@ -116,7 +140,6 @@ class AutoClickerBot:
             region = {'left': left, 'top': top, 'width': width, 'height': height}
             
             screenshot = self.capture_screen(region)
-            
             detected_text = self.detect_text(screenshot)
             detected_value = self.extract_numeric_value(detected_text)
             
@@ -128,9 +151,9 @@ class AutoClickerBot:
                 
                 if consecutive_checks >= 4:
                     print(f"Detected value: {detected_value}")
-                    self.status_label.config(text=f"Status: Value {detected_value} detected, adjusting", fg="blue")
+                    self.status_label.config(text=f"Status: Value {detected_value} detected, stopping", fg="blue")
                     
-                    self.value_detected_label.config(text=f"Value {detected_value} detected, preparing to close...")
+                    self.value_detected_label.config(text=f"Value {detected_value} detected. Auto-stopping.")
                     
                     keyboard.press_and_release("3")
                     pyautogui.click()
@@ -145,11 +168,13 @@ class AutoClickerBot:
             else:
                 keyboard.press_and_release("3")
                 pyautogui.click()
-                self.status_label.config(text="Status: Adjusting", fg="orange")
+                self.status_label.config(text="Status: Adjusting (outside range)", fg="orange")
             
+            previous_value = detected_value
             time.sleep(0.3)
 
 if __name__ == "__main__":
     root = tk.Tk()
     bot = AutoClickerBot(root)
     root.mainloop()
+
